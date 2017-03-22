@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+  </plugin-info>
+
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="config-notifier-plugin"/>
+
+  <repository-hook key="config-notifier-hook" name="Config Server Notifier Hook" i18n-name-key="config-notifier-hook.name" class="com.maxxton.config.notifier.hook.ConfigNotifierHook">
+    <description key="config-notifier-hook.description">Config Server Notifier plugin. Notifies the config servers on all environments about property changes.</description>
+    <icon>images/icon.ico</icon>
+    <config-form name="Config Notifier Hook Config" key="config-notifier-hook-config">
+      <view>com.maxxton.config.notifier.hook.confignotifierhook.view</view>
+      <directory location="/static/"/>
+    </config-form>
+  </repository-hook>
+</atlassian-plugin>

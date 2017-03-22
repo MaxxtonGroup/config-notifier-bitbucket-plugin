@@ -1,0 +1,31 @@
+{namespace com.maxxton.config.notifier.hook.confignotifierhook}
+
+/**
+ * @param? config
+ * @param? errors
+ */
+{template .view}
+    {call aui.form.textField}
+        {param id: 'url-development' /}
+        {param value: $config ? $config['url-development'] : null /}
+        {param labelContent: 'Development Url'  /}
+        {param descriptionText: 'Location of the development config server' /}
+        {param errorTexts: $errors ? $errors['url-development'] : null /}
+    {/call}
+
+    {call aui.form.textField}
+        {param id: 'url-acceptance' /}
+        {param value: $config ? $config['url-acceptance'] : null /}
+        {param labelContent: 'Acceptance Url'  /}
+        {param descriptionText: 'Location of the acceptance config server' /}
+        {param errorTexts: $errors ? $errors['url-acceptance'] : null /}
+    {/call}
+
+    {call aui.form.textField}
+        {param id: 'url-production' /}
+        {param value: $config ? $config['url-production'] : null /}
+        {param labelContent: 'Production Url'  /}
+        {param descriptionText: 'Location of the production config server' /}
+        {param errorTexts: $errors ? $errors['url-production'] : null /}
+    {/call}
+{/template}
