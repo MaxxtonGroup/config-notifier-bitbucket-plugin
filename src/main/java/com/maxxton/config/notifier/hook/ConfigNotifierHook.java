@@ -5,12 +5,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.atlassian.bitbucket.commit.Changeset;
@@ -59,12 +62,19 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
    * @param refChanges Collections of changes with reference ids and hashes
    */
   public void postReceive(RepositoryHookContext context, Collection<RefChange> refChanges) {
-    String development = context.getSettings().getString("url-development");
-    String acceptance = context.getSettings().getString("url-acceptance");
-    String production = context.getSettings().getString("url-production");
+    String developmentUsername = context.getSettings().getString("development-username", "");
+    String developmentPassword = context.getSettings().getString("development-password", "");
+    String developmentUrl = context.getSettings().getString("development-url", "");
 
-    if (development != null && acceptance != null && production != null) {
+    String acceptanceUsername = context.getSettings().getString("acceptance-username", "");
+    String acceptancePassword = context.getSettings().getString("acceptance-password", "");
+    String acceptanceUrl = context.getSettings().getString("acceptance-url", "");
 
+    String productionUsername = context.getSettings().getString("production-username", "");
+    String productionPassword = context.getSettings().getString("production-password", "");
+    String productionUrl = context.getSettings().getString("production-url", "");
+
+    if (!developmentUrl.isEmpty() && !acceptanceUrl.isEmpty() && !productionUrl.isEmpty()) {
       Notification notification = new Notification();
       Set<String> commits = new HashSet<String>();
       for (RefChange change : refChanges) {
@@ -89,11 +99,11 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
       }
 
       if (notification.getBranch().equals("develop")) {
-        this.sendNotification(development, notification);
+        this.sendNotification(developmentUsername, developmentPassword, developmentUrl, notification);
       }
       if (notification.getBranch().equals("master")) {
-        this.sendNotification(acceptance, notification);
-        this.sendNotification(production, notification);
+        this.sendNotification(acceptanceUsername, acceptancePassword, acceptanceUrl, notification);
+        this.sendNotification(productionUsername, productionPassword, productionUrl, notification);
       }
     }
   }
@@ -104,15 +114,29 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
    * @param url          url of the config server
    * @param notification notification containing the branch and changed files
    */
-  private void sendNotification(String url, Notification notification) {
+  private void sendNotification(String username, String password, String url, Notification notification) {
     Gson gson = new Gson();
     String object = gson.toJson(notification);
 
+    if (!url.startsWith("http://") || !url.startsWith("https://"))
+      url = "http://" + url;
+    
     url = url.endsWith("/") ? url + "monitor" : url + "/monitor";
 
-    CloseableHttpClient client = null;
-    try {
+    CloseableHttpClient client;
+
+    if (!username.isEmpty() && !password.isEmpty()) {
+      CredentialsProvider provider = new BasicCredentialsProvider();
+      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+      provider.setCredentials(AuthScope.ANY, credentials);
+
+      client = HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
+    }
+    else {
       client = HttpClients.createDefault();
+    }
+
+    try {
       HttpPost httpPost = new HttpPost(url);
       StringEntity entity = new StringEntity(object);
       httpPost.setEntity(entity);
@@ -142,16 +166,43 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
    * @param repository current repository information
    */
   public void validate(Settings settings, SettingsValidationErrors errors, Repository repository) {
-    if (settings.getString("url-development", "").isEmpty()) {
-      errors.addFieldError("url-development", "Url field for development is blank, please supply one");
+    // Development validation
+    if (settings.getString("development-username", "").isEmpty() && !settings.getString("development-password", "").isEmpty()) {
+      errors.addFieldError("development-username", "Username should not be blank when the password is set, please supply one");
     }
 
-    if (settings.getString("url-acceptance", "").isEmpty()) {
-      errors.addFieldError("url-acceptance", "Url field for acceptance is blank, please supply one");
+    if (!settings.getString("development-username", "").isEmpty() && settings.getString("development-password", "").isEmpty()) {
+      errors.addFieldError("development-password", "Password should not be blank when the username is set, please supply one");
     }
 
-    if (settings.getString("url-production", "").isEmpty()) {
-      errors.addFieldError("url-production", "Url field for production is blank, please supply one");
+    if (settings.getString("development-url", "").isEmpty()) {
+      errors.addFieldError("development-url", "Url field for development is blank, please supply one");
+    }
+
+    // Acceptance validation
+    if (settings.getString("acceptance-username", "").isEmpty() && !settings.getString("acceptance-password", "").isEmpty()) {
+      errors.addFieldError("acceptance-username", "Username should not be blank when the password is set, please supply one");
+    }
+
+    if (!settings.getString("acceptance-username", "").isEmpty() && settings.getString("acceptance-password", "").isEmpty()) {
+      errors.addFieldError("acceptance-password", "Password should not be blank when the username is set, please supply one");
+    }
+
+    if (settings.getString("acceptance-url", "").isEmpty()) {
+      errors.addFieldError("acceptance-url", "Url field for acceptance is blank, please supply one");
+    }
+
+    // Production validation
+    if (settings.getString("production-username", "").isEmpty() && !settings.getString("production-password", "").isEmpty()) {
+      errors.addFieldError("production-username", "Username should not be blank when the password is set, please supply one");
+    }
+
+    if (!settings.getString("production-username", "").isEmpty() && settings.getString("production-password", "").isEmpty()) {
+      errors.addFieldError("production-password", "Password should not be blank when the username is set, please supply one");
+    }
+
+    if (settings.getString("production-url", "").isEmpty()) {
+      errors.addFieldError("production-url", "Url field for production is blank, please supply one");
     }
   }
 }

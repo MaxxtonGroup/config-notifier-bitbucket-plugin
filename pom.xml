@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.maxxton.config.notifier</groupId>
     <artifactId>config-notifier-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <organization>
         <name>Maxxton Group</name>
         <url>http://www.maxxton.com/</url>
@@ -112,6 +112,22 @@
                 <version>${amps.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <allowGoogleTracking>false</allowGoogleTracking>
+                    <enableFastdev>false</enableFastdev>
+                    <enableDevToolbox>false</enableDevToolbox>
+                    <enablePde>false</enablePde>
+                    <skipRestDocGeneration>true</skipRestDocGeneration>
+                    <skipManifestValidation>true</skipManifestValidation>
+                    <extractDependencies>false</extractDependencies>
+                    <skipManifestValidation>true</skipManifestValidation>
+                    <enableQuickReload>true</enableQuickReload>
+                    <pluginArtifacts>
+                        <pluginArtifact>
+                            <groupId>com.atlassian.labs.plugins</groupId>
+                            <artifactId>quickreload</artifactId>
+                            <version>${quick.reload.version}</version>
+                        </pluginArtifact>
+                    </pluginArtifacts>
                     <products>
                         <product>
                             <id>bitbucket</id>
@@ -159,6 +175,7 @@
         <bitbucket.version>4.9.1</bitbucket.version>
         <bitbucket.data.version>4.9.1</bitbucket.data.version>
         <amps.version>6.2.11</amps.version>
+        <quick.reload.version>1.30.2</quick.reload.version>
         <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
         <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->

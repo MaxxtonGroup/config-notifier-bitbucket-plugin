@@ -5,27 +5,82 @@
  * @param? errors
  */
 {template .view}
+    <h4>Development</h4>
+
     {call aui.form.textField}
-        {param id: 'url-development' /}
-        {param value: $config ? $config['url-development'] : null /}
-        {param labelContent: 'Development Url'  /}
+        {param id: 'development-username' /}
+        {param value: $config ? $config['development-username'] : null /}
+        {param labelContent: 'Username'  /}
+        {param descriptionText: 'Username for authenticating with the development config server' /}
+        {param errorTexts: $errors ? $errors['development-username'] : null /}
+    {/call}
+
+    {call aui.form.passwordField}
+        {param id: 'development-password' /}
+        {param value: $config ? $config['development-password'] : null /}
+        {param labelContent: 'Password'  /}
+        {param descriptionText: 'Password for authenticating with the development config server' /}
+        {param errorTexts: $errors ? $errors['development-password'] : null /}
+    {/call}
+
+    {call aui.form.textField}
+        {param id: 'development-url' /}
+        {param value: $config ? $config['development-url'] : null /}
+        {param labelContent: 'Url'  /}
         {param descriptionText: 'Location of the development config server' /}
-        {param errorTexts: $errors ? $errors['url-development'] : null /}
+        {param errorTexts: $errors ? $errors['development-url'] : null /}
+    {/call}
+
+    <h4>Acceptance</h4>
+
+    {call aui.form.textField}
+        {param id: 'acceptance-username' /}
+        {param value: $config ? $config['acceptance-username'] : null /}
+        {param labelContent: 'Username'  /}
+        {param descriptionText: 'Username for authenticating with the acceptance config server' /}
+        {param errorTexts: $errors ? $errors['acceptance-username'] : null /}
+    {/call}
+
+    {call aui.form.passwordField}
+        {param id: 'acceptance-password' /}
+        {param value: $config ? $config['acceptance-password'] : null /}
+        {param labelContent: 'Password'  /}
+        {param descriptionText: 'Password for authenticating with the acceptance config server' /}
+        {param errorTexts: $errors ? $errors['acceptance-password'] : null /}
     {/call}
 
     {call aui.form.textField}
-        {param id: 'url-acceptance' /}
-        {param value: $config ? $config['url-acceptance'] : null /}
-        {param labelContent: 'Acceptance Url'  /}
+        {param id: 'acceptance-url' /}
+        {param value: $config ? $config['acceptance-url'] : null /}
+        {param labelContent: 'Url'  /}
         {param descriptionText: 'Location of the acceptance config server' /}
-        {param errorTexts: $errors ? $errors['url-acceptance'] : null /}
+        {param errorTexts: $errors ? $errors['acceptance-url'] : null /}
+    {/call}
+
+    <h4>Production</h4>
+
+    {call aui.form.textField}
+        {param id: 'production-username' /}
+        {param value: $config ? $config['production-username'] : null /}
+        {param labelContent: 'Username'  /}
+        {param descriptionText: 'Username for authenticating with the production config server' /}
+        {param errorTexts: $errors ? $errors['production-username'] : null /}
+    {/call}
+
+    {call aui.form.passwordField}
+        {param id: 'production-password' /}
+        {param value: $config ? $config['production-password'] : null /}
+        {param labelContent: 'Password'  /}
+        {param descriptionText: 'Password for authenticating with the production config server' /}
+        {param errorTexts: $errors ? $errors['production-password'] : null /}
     {/call}
 
     {call aui.form.textField}
-        {param id: 'url-production' /}
-        {param value: $config ? $config['url-production'] : null /}
-        {param labelContent: 'Production Url'  /}
+        {param id: 'production-url' /}
+        {param value: $config ? $config['production-url'] : null /}
+        {param labelContent: 'Url'  /}
         {param descriptionText: 'Location of the production config server' /}
-        {param errorTexts: $errors ? $errors['url-production'] : null /}
+        {param errorTexts: $errors ? $errors['production-url'] : null /}
     {/call}
+
 {/template}
