@@ -58,7 +58,7 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
   /**
    * Create and send notifications after a push or pull request.
    *
-   * @param context    context of the RepositoryHook
+   * @param context context of the RepositoryHook
    * @param refChanges Collections of changes with reference ids and hashes
    */
   public void postReceive(RepositoryHookContext context, Collection<RefChange> refChanges) {
@@ -87,7 +87,9 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
       }
 
       for (String commitId : commits) {
-        ChangesetsRequest changesetsRequest = new ChangesetsRequest.Builder(context.getRepository()).commitId(commitId).build();
+        ChangesetsRequest changesetsRequest = new ChangesetsRequest.Builder(context.getRepository())
+          .commitId(commitId)
+          .build();
         PageRequest request = new PageRequestImpl(0, 100);
         Page<Changeset> changePage = this.commitService.getChangesets(changesetsRequest, request);
         for (Changeset changeset : changePage.getValues()) {
@@ -111,16 +113,17 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
   /**
    * Send a notification to a config server
    *
-   * @param url          url of the config server
+   * @param url url of the config server
    * @param notification notification containing the branch and changed files
    */
   private void sendNotification(String username, String password, String url, Notification notification) {
     Gson gson = new Gson();
     String object = gson.toJson(notification);
 
-    if (!url.startsWith("http://") || !url.startsWith("https://"))
+    if (!url.startsWith("http://") || !url.startsWith("https://")) {
       url = "http://" + url;
-    
+    }
+
     url = url.endsWith("/") ? url + "monitor" : url + "/monitor";
 
     CloseableHttpClient client;
@@ -161,18 +164,28 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
   /**
    * Validate the urls set in the config form
    *
-   * @param settings   settings retrieved from the form
-   * @param errors     holder for errors to be shown to the user
+   * @param settings settings retrieved from the form
+   * @param errors holder for errors to be shown to the user
    * @param repository current repository information
    */
   public void validate(Settings settings, SettingsValidationErrors errors, Repository repository) {
     // Development validation
-    if (settings.getString("development-username", "").isEmpty() && !settings.getString("development-password", "").isEmpty()) {
-      errors.addFieldError("development-username", "Username should not be blank when the password is set, please supply one");
+    if (settings.getString("development-username", "").isEmpty() && !settings
+      .getString("development-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "development-username",
+        "Username should not be blank when the password is set, please supply one"
+      );
     }
 
-    if (!settings.getString("development-username", "").isEmpty() && settings.getString("development-password", "").isEmpty()) {
-      errors.addFieldError("development-password", "Password should not be blank when the username is set, please supply one");
+    if (!settings.getString("development-username", "").isEmpty() && settings
+      .getString("development-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "development-password",
+        "Password should not be blank when the username is set, please supply one"
+      );
     }
 
     if (settings.getString("development-url", "").isEmpty()) {
@@ -180,12 +193,22 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
     }
 
     // Acceptance validation
-    if (settings.getString("acceptance-username", "").isEmpty() && !settings.getString("acceptance-password", "").isEmpty()) {
-      errors.addFieldError("acceptance-username", "Username should not be blank when the password is set, please supply one");
+    if (settings.getString("acceptance-username", "").isEmpty() && !settings
+      .getString("acceptance-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "acceptance-username",
+        "Username should not be blank when the password is set, please supply one"
+      );
     }
 
-    if (!settings.getString("acceptance-username", "").isEmpty() && settings.getString("acceptance-password", "").isEmpty()) {
-      errors.addFieldError("acceptance-password", "Password should not be blank when the username is set, please supply one");
+    if (!settings.getString("acceptance-username", "").isEmpty() && settings
+      .getString("acceptance-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "acceptance-password",
+        "Password should not be blank when the username is set, please supply one"
+      );
     }
 
     if (settings.getString("acceptance-url", "").isEmpty()) {
@@ -193,12 +216,22 @@ public class ConfigNotifierHook implements AsyncPostReceiveRepositoryHook, Repos
     }
 
     // Production validation
-    if (settings.getString("production-username", "").isEmpty() && !settings.getString("production-password", "").isEmpty()) {
-      errors.addFieldError("production-username", "Username should not be blank when the password is set, please supply one");
+    if (settings.getString("production-username", "").isEmpty() && !settings
+      .getString("production-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "production-username",
+        "Username should not be blank when the password is set, please supply one"
+      );
     }
 
-    if (!settings.getString("production-username", "").isEmpty() && settings.getString("production-password", "").isEmpty()) {
-      errors.addFieldError("production-password", "Password should not be blank when the username is set, please supply one");
+    if (!settings.getString("production-username", "").isEmpty() && settings
+      .getString("production-password", "")
+      .isEmpty()) {
+      errors.addFieldError(
+        "production-password",
+        "Password should not be blank when the username is set, please supply one"
+      );
     }
 
     if (settings.getString("production-url", "").isEmpty()) {
